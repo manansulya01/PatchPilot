@@ -29,7 +29,7 @@ Open http://127.0.0.1:8000.
 
 ## Deploy a demo
 
-A Docker-based Render blueprint is included in `render.yaml`. Import this repository in Render and create the service from the blueprint. The demo works without a key; live inference requires your own valid Nebius access and credits. Do not enable public live model access without adding authentication/rate limits first, because the connection panel is intended for a local/private demo.
+A Docker-based Render blueprint is included in `render.yaml`. Import this repository in Render and create the service from the blueprint. It deploys in demo-only mode and disables public changes to model credentials. To enable live inference later, add `NEBIUS_API_KEY` and `NEBIUS_MODEL` as private service environment variables in Render, and put the service behind suitable access controls/rate limits before allowing public live inference. Do not switch runtime configuration on for a public service.
 
 ## Enable live Nebius inference
 
