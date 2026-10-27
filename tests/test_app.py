@@ -114,3 +114,11 @@ def test_connection_test_disabled_on_public_deployment(monkeypatch):
     monkeypatch.setenv("PATCHPILOT_ALLOW_RUNTIME_CONFIG", "false")
     response = client.post("/api/config/test")
     assert response.status_code == 403
+
+
+def test_config_reports_runtime_configuration_policy(monkeypatch):
+    monkeypatch.setenv("PATCHPILOT_ALLOW_RUNTIME_CONFIG", "false")
+    response = client.get("/api/config")
+    assert response.status_code == 200
+    assert response.json()["runtime_config_allowed"] is False
+    assert "api_key" not in response.json()
