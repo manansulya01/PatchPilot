@@ -122,3 +122,62 @@ def test_config_reports_runtime_configuration_policy(monkeypatch):
     assert response.status_code == 200
     assert response.json()["runtime_config_allowed"] is False
     assert "api_key" not in response.json()
+
+
+def test_live_analysis_runs_two_passes_and_reports_provenance(monkeypatch):
+    import json
+    from types import SimpleNamespace
+
+    with _config_lock:
+        _config["api_key"] = "test-secret"
+        _config["model"] = "nvidia/Nemotron-3_5-Lightning"
+        _config["base_url"] = "https://api.tokenfactory.nebius.com/v1"
+
+    responses = [
+        {
+            "root_cause": "The function rounds each item before summing.",
+            "patch": "--- a/example.py\n+++ b/example.py\n@@ -1 +1 @@\n-old = round(value, 2)\n+new = value\n",
+            "regression_test": "def test_rounding():\n    assert calculate([1.005]) == 1.005\n",
+            "assumptions": ["The business rule rounds only once."],
+            "risks": ["Confirm currency precision rules."],
+            "next_steps": ["Run the proposed regression test in an isolated environment."],
+        },
+        {
+            "verdict": "REVISE",
+            "findings": ["The patch may change callers that expect rounded values."],
+            "missing_tests": ["Add a multi-item boundary case."],
+            "rationale": "The patch does not establish the expected return contract.",
+        },
+    ]
+
+    class FakeOpenAI:
+        def __init__(self, **kwargs):
+            self.calls = 0
+            self.chat = SimpleNamespace(completions=SimpleNamespace(create=self.create))
+
+        def create(self, **kwargs):
+            index = self.calls
+            self.calls += 1
+            return SimpleNamespace(
+                model=kwargs["model"],
+                choices=[SimpleNamespace(message=SimpleNamespace(content=json.dumps(responses[index])))],
+            )
+
+    fake_class = FakeOpenAI
+    monkeypatch.setattr("app.OpenAI", fake_class)
+    response = client.post("/api/analyze", json={
+        "description": "The output rounds too early.",
+        "code": "def calculate(value):\n    return round(value, 2)",
+        "language": "python",
+        "mode": "live",
+        "challenge": True,
+    })
+    assert response.status_code == 200
+    data = response.json()
+    assert data["mode"] == "live"
+    assert data["challenge_review"]["status"] == "COMPLETED"
+    assert data["challenge_review"]["verdict"] == "REVISE"
+    assert data["patch_review"]["status"] == "NO HEURISTIC FLAGS"
+    assert data["verification"]["label"] == "NOT RUN"
+    assert len(data["provenance"]["input_sha256"]) == 64
+    assert len(data["provenance"]["patch_sha256"]) == 64
