@@ -54,6 +54,10 @@ class BugRequest(BaseModel):
     challenge: bool = True
 
 
+def _live_inference_allowed() -> bool:
+    return os.getenv("PATCHPILOT_ALLOW_LIVE_INFERENCE", "true").lower() in {"1", "true", "yes"}
+
+
 def _connection_snapshot() -> dict:
     with _config_lock:
         return {
@@ -62,6 +66,7 @@ def _connection_snapshot() -> dict:
             "model": _config["model"],
             "key_present": bool(_config["api_key"]),
             "runtime_config_allowed": os.getenv("PATCHPILOT_ALLOW_RUNTIME_CONFIG", "true").lower() in {"1", "true", "yes"},
+            "live_inference_allowed": _live_inference_allowed(),
         }
 
 
@@ -82,6 +87,8 @@ def get_config():
 
 @app.post("/api/config/test")
 def test_connection():
+    if not _live_inference_allowed():
+        raise HTTPException(403, "Live model requests are disabled on this deployment.")
     if os.getenv("PATCHPILOT_ALLOW_RUNTIME_CONFIG", "true").lower() not in {"1", "true", "yes"}:
         raise HTTPException(403, "Interactive connection tests are disabled on this deployment.")
     snapshot = _connection_snapshot()
@@ -243,6 +250,8 @@ def _demo_result(req: BugRequest) -> dict:
 def analyze(req: BugRequest):
     if req.mode == "demo":
         return _demo_result(req)
+    if not _live_inference_allowed():
+        raise HTTPException(403, "Live model requests are disabled on this deployment. Demo mode remains available.")
 
     snapshot = _connection_snapshot()
     with _config_lock:

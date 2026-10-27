@@ -13,6 +13,7 @@
 - Nebius Token Factory integration through the OpenAI-compatible chat completions API.
 - Server-side API key handling; keys are kept in process memory and are not written to disk.
 - A user-triggered one-request live connection test reports the selected model and latency without exposing credentials.
+- Separate `PATCHPILOT_ALLOW_LIVE_INFERENCE` kill switch blocks billable model requests even if server-side credentials are present; the hosted Render blueprint sets it to `false`.
 - Clearly separated live-model and demo modes, with an explicit notice that live mode sends the bug report and source code to Nebius for inference.
 - Safe-by-default workflow: the MVP proposes code and tests but does not execute arbitrary model-generated code.
 - Downloadable JSON report with SHA-256 fingerprints for the input and proposed patch.
@@ -36,7 +37,7 @@ Open http://127.0.0.1:8000.
 
 ## Deploy a demo
 
-A Docker-based Render blueprint is included in `render.yaml`. Import this repository in Render and create the service from the blueprint. It deploys in demo-only mode and disables public changes to model credentials. To enable live inference later, add `NEBIUS_API_KEY` and `NEBIUS_MODEL` as private service environment variables in Render, and put the service behind suitable access controls/rate limits before allowing public live inference. Do not switch runtime configuration on for a public service.
+A Docker-based Render blueprint is included in `render.yaml`. Import this repository in Render and create the service from the blueprint. It deploys in demo-only mode and disables both live inference and public changes to model credentials. To enable live inference later, set `PATCHPILOT_ALLOW_LIVE_INFERENCE=true` and add `NEBIUS_API_KEY` and `NEBIUS_MODEL` as private service environment variables only after adding authentication, rate limits, and appropriate access controls. Do not enable live inference on an unrestricted public service.
 
 ## Enable live Nebius inference
 
@@ -63,7 +64,7 @@ See [Product positioning and differentiation](docs/PRODUCT_POSITIONING.md) for t
 ## API
 
 - `GET /api/health` — health and connection status.
-- `GET /api/config` — safe configuration status (never returns the API key).
+- `GET /api/config` — safe configuration status (never returns the API key), including whether live inference is enabled.
 - `POST /api/config` — set/clear the in-memory model connection.
 - `POST /api/config/test` — send one small live completion to verify access; disabled when runtime configuration is disabled.
 - `POST /api/analyze` — analyze a bug using demo mode or the configured model.

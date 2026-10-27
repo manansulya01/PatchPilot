@@ -181,3 +181,35 @@ def test_live_analysis_runs_two_passes_and_reports_provenance(monkeypatch):
     assert data["verification"]["label"] == "NOT RUN"
     assert len(data["provenance"]["input_sha256"]) == 64
     assert len(data["provenance"]["patch_sha256"]) == 64
+
+
+def test_live_analysis_disabled_even_if_server_key_is_configured(monkeypatch):
+    monkeypatch.setenv("PATCHPILOT_ALLOW_LIVE_INFERENCE", "false")
+    with _config_lock:
+        _config["api_key"] = "test-secret"
+        _config["model"] = "nvidia/Nemotron-3_5-Lightning"
+    response = client.post("/api/analyze", json={
+        "description": "A sufficiently detailed bug report.",
+        "code": "print('hello')",
+        "language": "python",
+        "mode": "live",
+    })
+    assert response.status_code == 403
+    assert "disabled" in response.json()["detail"].lower()
+
+
+def test_connection_test_disabled_when_live_inference_is_off(monkeypatch):
+    monkeypatch.setenv("PATCHPILOT_ALLOW_LIVE_INFERENCE", "false")
+    with _config_lock:
+        _config["api_key"] = "test-secret"
+        _config["model"] = "nvidia/Nemotron-3_5-Lightning"
+    response = client.post("/api/config/test")
+    assert response.status_code == 403
+
+
+def test_config_exposes_live_inference_policy_without_secrets(monkeypatch):
+    monkeypatch.setenv("PATCHPILOT_ALLOW_LIVE_INFERENCE", "false")
+    response = client.get("/api/config")
+    assert response.status_code == 200
+    assert response.json()["live_inference_allowed"] is False
+    assert "api_key" not in response.json()
