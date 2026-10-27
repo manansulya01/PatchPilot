@@ -14,6 +14,7 @@
 - Server-side API key handling; keys are kept in process memory and are not written to disk.
 - A user-triggered one-request live connection test reports the selected model and latency without exposing credentials.
 - Separate `PATCHPILOT_ALLOW_LIVE_INFERENCE` kill switch blocks billable model requests even if server-side credentials are present; the hosted Render blueprint sets it to `false`.
+- API credentials can only be configured for HTTPS `*.nebius.com` endpoints (HTTP is allowed only for loopback development), reducing the chance of accidentally sending a key to an untrusted host.
 - Clearly separated live-model and demo modes, with an explicit notice that live mode sends the bug report and source code to Nebius for inference.
 - Safe-by-default workflow: the MVP proposes code and tests but does not execute arbitrary model-generated code.
 - Downloadable JSON report with SHA-256 fingerprints for the input and proposed patch.
