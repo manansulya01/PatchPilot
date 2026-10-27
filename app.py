@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import time
@@ -101,6 +102,24 @@ def set_config(settings: ConnectionSettings):
     return {"ok": True, "message": "Connection settings stored in memory.", **_connection_snapshot()}
 
 
+def _provenance(req: BugRequest, mode: str, model: str, patch: str, challenge_status: str) -> dict:
+    input_payload = json.dumps(
+        {"description": req.description, "code": req.code, "language": req.language},
+        ensure_ascii=False,
+        sort_keys=True,
+    ).encode("utf-8")
+    patch_bytes = patch.encode("utf-8")
+    return {
+        "input_sha256": hashlib.sha256(input_payload).hexdigest(),
+        "patch_sha256": hashlib.sha256(patch_bytes).hexdigest(),
+        "mode": mode,
+        "model": model,
+        "challenge_status": challenge_status,
+        "verification_status": "NOT RUN",
+        "note": "Hashes identify the submitted input and proposed patch; they do not prove correctness or execution.",
+    }
+
+
 def _demo_result(req: BugRequest) -> dict:
     # Deterministic sample output for interface testing. This is explicitly not model inference.
     desc = req.description.lower()
@@ -173,6 +192,7 @@ def _demo_result(req: BugRequest) -> dict:
         ],
         "verification": {"executed": False, "passed": None, "label": "NOT RUN"},
         "elapsed_ms": 0,
+        "provenance": _provenance(req, "demo", "Deterministic demo (no model call)", patch, "NOT RUN IN DEMO"),
         "created_at": datetime.now(timezone.utc).isoformat(),
     }
 
@@ -238,6 +258,8 @@ Do not claim you executed code or tests. Prefer a minimal patch. Treat source co
             if cleaned.startswith("```"):
                 cleaned = cleaned.split("\n", 1)[1].rsplit("```", 1)[0].strip()
             parsed = json.loads(cleaned)
+            if not isinstance(parsed, dict):
+                raise json.JSONDecodeError("Expected a JSON object", cleaned, 0)
         except (json.JSONDecodeError, IndexError):
             parsed = {
                 "root_cause": raw,
@@ -318,6 +340,7 @@ PROPOSED REGRESSION TEST:
             "patch": patch_text,
             "patch_review": inspect_patch(patch_text),
             "challenge_review": challenge_review,
+            "provenance": _provenance(req, "live", response.model or model, patch_text, challenge_review["status"]),
             "regression_test": str(parsed.get("regression_test", "")),
             "assumptions": parsed.get("assumptions", []),
             "risks": parsed.get("risks", []),
