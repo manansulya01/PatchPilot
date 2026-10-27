@@ -135,7 +135,7 @@ async function runAnalysis() {
     const response = await fetch("/api/analyze", {
       method: "POST",
       headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({description, code, language: $("language").value, mode})
+      body: JSON.stringify({description, code, language: $("language").value, mode, challenge: $("challenge-pass").checked})
     });
     const data = await response.json();
     if (!response.ok) throw new Error(data.detail || "Analysis failed.");
@@ -168,6 +168,15 @@ function renderReport(data) {
   $("patch-review-findings").innerHTML = findings.length
     ? findings.map(item => '<li><strong>' + escapeHtml(item.severity || "info").toUpperCase() + ' · ' + escapeHtml(item.id || "finding") + '</strong>: ' + escapeHtml(item.message || "Review this item.") + '</li>').join("")
     : '<li>No heuristic flags were triggered. This does not mean the patch is correct or safe.</li>';
+  const challenge = data.challenge_review || {status: "UNAVAILABLE", verdict: "UNASSESSED", findings: ["No independent review data returned."], missing_tests: []};
+  const verdictNode = $("challenge-verdict");
+  verdictNode.textContent = challenge.verdict || challenge.status || "UNASSESSED";
+  verdictNode.className = "guard-status " + (challenge.verdict === "REVISE" ? "warning" : (challenge.verdict === "APPROVE_WITH_CAUTION" ? "clear" : "neutral"));
+  $("challenge-rationale").textContent = challenge.rationale || (challenge.status === "COMPLETED" ? "The second model pass reviewed the proposed patch independently. Read each finding; this is still model opinion, not execution evidence." : (challenge.findings || ["Review was not performed."]).join(" "));
+  const challengeFindings = Array.isArray(challenge.findings) ? challenge.findings : [];
+  $("challenge-findings").innerHTML = challengeFindings.length ? challengeFindings.map(item => '<li>' + escapeHtml(item) + '</li>').join("") : "<li>No specific findings returned.</li>";
+  const missingTests = Array.isArray(challenge.missing_tests) ? challenge.missing_tests : [];
+  $("challenge-tests").innerHTML = missingTests.length ? missingTests.map(item => '<li>' + escapeHtml(item) + '</li>').join("") : "<li>No additional cases listed; design tests for your own edge cases.</li>";
   const risks = [
     ...(Array.isArray(data.assumptions) ? data.assumptions.map(x => "Assumption: " + x) : []),
     ...(Array.isArray(data.risks) ? data.risks : []),
