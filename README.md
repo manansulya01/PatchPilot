@@ -47,6 +47,8 @@ Privacy: Demo mode uses deterministic local output and does not send the snippet
 
 If you don't have access/credits yet, use **Demo mode** to explore the UI. Demo output is illustrative, not an actual model response and not proof that a patch works. The optional adversarial review uses a second model call and may increase latency and account usage. A submission to the Nebius x NVIDIA hackathon must use Nebius infrastructure and an NVIDIA open-source model in the actual working project.
 
+See [Product positioning and differentiation](docs/PRODUCT_POSITIONING.md) for the intended scope and current limitations.
+
 ## How the verification-first workflow works
 
 1. Describe the observed bug and provide the relevant source code.
