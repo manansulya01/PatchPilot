@@ -26,7 +26,7 @@ STATIC = ROOT / "static"
 app = FastAPI(
     title="PatchPilot",
     description="Verification-first AI debugging workspace",
-    version="0.1.0",
+    version="0.2.0",
 )
 app.mount("/static", StaticFiles(directory=STATIC), name="static")
 
