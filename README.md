@@ -13,6 +13,8 @@
 - Clearly separated live-model and demo modes.
 - Safe-by-default workflow: the MVP proposes code and tests but does not execute arbitrary model-generated code.
 - Downloadable JSON report and copyable patch text.
+- **Patch preflight guard:** heuristic checks for malformed diffs, dynamic execution, shell/subprocess calls, unsafe pickle loading, network calls, possible secret access, and oversized patches.
+- Transparent findings and limitations; a clean preflight is never presented as proof of correctness or security.
 - Health endpoint and automated API tests.
 
 ## Run locally
@@ -45,8 +47,9 @@ If you don't have access/credits yet, use **Demo mode** to explore the UI. Demo 
 
 1. Describe the observed bug and provide the relevant source code.
 2. PatchPilot asks the configured model for a root-cause analysis, minimal unified diff, regression-test proposal, and explicit risks.
-3. Review the model output. The app does **not** claim a patch passed tests because it has not executed arbitrary project code.
-4. Export the report for review or downstream testing in a separately isolated environment.
+3. Review the model output and the **Patch preflight** findings. The guard scans added diff lines for a small set of risky patterns and flags malformed/oversized diffs.
+4. Treat the guard as a review aid, not a security boundary: it can miss issues and produce false positives. The app does **not** claim a patch passed tests because it has not executed arbitrary project code.
+5. Export the report for review or downstream testing in a separately isolated environment.
 
 ## API
 
@@ -64,6 +67,7 @@ If you don't have access/credits yet, use **Demo mode** to explore the UI. Demo 
 ## Security notes
 
 - Intended for local development; do not expose the server publicly without adding authentication, rate limits, CSRF protections, and production hardening.
+- The patch preflight is heuristic only. It is not a sandbox, complete static analyzer, or proof of safety.
 - Never run untrusted repositories or model-generated commands on the host. A future test runner should use an isolated, resource-limited container.
 - API keys are stored in process memory only and are lost when the server restarts.
 
