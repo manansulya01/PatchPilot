@@ -7,5 +7,7 @@ services:
     envVars:
       - key: PATCHPILOT_ALLOW_RUNTIME_CONFIG
         value: "false"
+      - key: PATCHPILOT_ALLOW_LIVE_INFERENCE
+        value: "false"
       - key: NEBIUS_BASE_URL
         value: https://api.tokenfactory.nebius.com/v1
