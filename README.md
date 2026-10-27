@@ -27,6 +27,10 @@ py -m venv .venv
 
 Open http://127.0.0.1:8000.
 
+## Deploy a demo
+
+A Docker-based Render blueprint is included in `render.yaml`. Import this repository in Render and create the service from the blueprint. The demo works without a key; live inference requires your own valid Nebius access and credits. Do not enable public live model access without adding authentication/rate limits first, because the connection panel is intended for a local/private demo.
+
 ## Enable live Nebius inference
 
 1. Obtain access to Nebius Token Factory and confirm that your account can call an NVIDIA Nemotron model.
