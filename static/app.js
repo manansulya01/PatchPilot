@@ -177,6 +177,10 @@ function renderReport(data) {
   $("challenge-findings").innerHTML = challengeFindings.length ? challengeFindings.map(item => '<li>' + escapeHtml(item) + '</li>').join("") : "<li>No specific findings returned.</li>";
   const missingTests = Array.isArray(challenge.missing_tests) ? challenge.missing_tests : [];
   $("challenge-tests").innerHTML = missingTests.length ? missingTests.map(item => '<li>' + escapeHtml(item) + '</li>').join("") : "<li>No additional cases listed; design tests for your own edge cases.</li>";
+  const provenance = data.provenance;
+  $("provenance-text").textContent = provenance
+    ? `Input SHA-256: ${provenance.input_sha256 || "unavailable"}\nPatch SHA-256: ${provenance.patch_sha256 || "unavailable"}\nMode: ${provenance.mode || data.mode} · Model: ${provenance.model || data.model || "none"}\nChallenge: ${provenance.challenge_status || "unavailable"} · Verification: ${provenance.verification_status || "NOT RUN"}\n${provenance.note || ""}`
+    : "No provenance metadata returned for this report.";
   const risks = [
     ...(Array.isArray(data.assumptions) ? data.assumptions.map(x => "Assumption: " + x) : []),
     ...(Array.isArray(data.risks) ? data.risks : []),
