@@ -12,8 +12,9 @@
 - Server-side API key handling; keys are kept in process memory and are not written to disk.
 - Clearly separated live-model and demo modes.
 - Safe-by-default workflow: the MVP proposes code and tests but does not execute arbitrary model-generated code.
+- Downloadable JSON report with SHA-256 fingerprints for the input and proposed patch.
 - Downloadable JSON report and copyable patch text.
-- **Optional adversarial review pass:** in live mode, a second model call critiques the proposed patch and identifies assumptions or missing regression cases.
+- **Optional second-pass adversarial review:** in live mode, a second call to the configured model critiques the proposed patch and identifies assumptions or missing regression cases.
 - **Patch preflight guard:** heuristic checks for malformed diffs, dynamic execution, shell/subprocess calls, unsafe pickle loading, network calls, possible secret access, and oversized patches.
 - Transparent findings and limitations; a clean preflight is never presented as proof of correctness or security.
 - Health endpoint and automated API tests.
@@ -47,7 +48,7 @@ If you don't have access/credits yet, use **Demo mode** to explore the UI. Demo 
 ## How the verification-first workflow works
 
 1. Describe the observed bug and provide the relevant source code.
-2. PatchPilot asks the configured model for a root-cause analysis, minimal unified diff, regression-test proposal, and explicit risks. In Live mode, an optional second call reviews the proposal skeptically and lists potential gaps.
+2. PatchPilot asks the configured model for a root-cause analysis, minimal unified diff, regression-test proposal, and explicit risks. In Live mode, an optional second call to the same configured model reviews the proposal skeptically and lists potential gaps.
 3. Review the model output and the **Patch preflight** findings. The guard scans added diff lines for a small set of risky patterns and flags malformed/oversized diffs.
 4. Treat the guard as a review aid, not a security boundary: it can miss issues and produce false positives. The app does **not** claim a patch passed tests because it has not executed arbitrary project code.
 5. Export the report for review or downstream testing in a separately isolated environment.
