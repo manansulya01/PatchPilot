@@ -76,6 +76,44 @@ def get_config():
     return _connection_snapshot()
 
 
+@app.post("/api/config/test")
+def test_connection():
+    if os.getenv("PATCHPILOT_ALLOW_RUNTIME_CONFIG", "true").lower() not in {"1", "true", "yes"}:
+        raise HTTPException(403, "Interactive connection tests are disabled on this deployment.")
+    snapshot = _connection_snapshot()
+    with _config_lock:
+        api_key = str(_config["api_key"])
+        base_url = str(_config["base_url"])
+        model = str(_config["model"])
+    if not snapshot["configured"]:
+        raise HTTPException(503, "Save a Nebius API key and model ID before testing the connection.")
+    started = time.monotonic()
+    try:
+        client = OpenAI(api_key=api_key, base_url=base_url, timeout=25.0, max_retries=0)
+        response = client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": "You are checking API connectivity. Reply with the exact text: PATCHPILOT_CONNECTION_OK"},
+                {"role": "user", "content": "Reply with the requested connectivity phrase."},
+            ],
+            temperature=0,
+            max_tokens=24,
+        )
+        content = (response.choices[0].message.content or "").strip()
+        return {
+            "ok": True,
+            "model": response.model or model,
+            "latency_ms": round((time.monotonic() - started) * 1000),
+            "response_preview": content[:120],
+            "tested_at": datetime.now(timezone.utc).isoformat(),
+            "note": "This confirms one live completion request, not model correctness or benchmark performance.",
+        }
+    except Exception as exc:
+        raise HTTPException(502, f"Nebius connection test failed ({type(exc).__name__}). Check model availability, endpoint, account access, and credits.") from None
+
+
+
+
 @app.post("/api/config")
 def set_config(settings: ConnectionSettings):
     if os.getenv("PATCHPILOT_ALLOW_RUNTIME_CONFIG", "true").lower() not in {"1", "true", "yes"}:
