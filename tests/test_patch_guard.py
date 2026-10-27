@@ -27,3 +27,21 @@ def test_empty_patch_is_explicit():
 def test_only_added_lines_are_scanned():
     result = inspect_patch("--- a/app.py\n+++ b/app.py\n@@ -1 +1 @@\n-result = eval(user_input)\n+result = safe_value\n")
     assert not any(item["id"] == "dynamic_execution" for item in result["findings"])
+
+
+def test_flags_selected_risky_added_patterns():
+    samples = {
+        "shell_execution": "+subprocess.run(user_command, shell=True)",
+        "unsafe_deserialization": "+payload = pickle.loads(blob)",
+        "network_access": "+response = requests.get(url)",
+        "secret_access": "+token = os.getenv('API_TOKEN')",
+    }
+    for expected_id, added_line in samples.items():
+        patch = "--- a/file.py\n+++ b/file.py\n@@ -1 +1 @@\n-old = None\n" + added_line + "\n"
+        result = inspect_patch(patch)
+        assert any(item["id"] == expected_id for item in result["findings"])
+
+
+def test_oversized_patch_is_flagged():
+    result = inspect_patch("--- a/file.py\n+++ b/file.py\n@@ -1 +1 @@\n+" + ("x" * 20001))
+    assert any(item["id"] == "large_patch" for item in result["findings"])
