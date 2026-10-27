@@ -102,6 +102,28 @@ async function saveSettings(event) {
     button.innerHTML = 'Save connection <span>→</span>';
   }
 }
+async function testConnection() {
+  const button = $("test-connection");
+  const message = $("settings-message");
+  button.disabled = true;
+  button.textContent = "Testing…";
+  message.classList.remove("error");
+  message.textContent = "Sending one small live request to the configured model…";
+  try {
+    const response = await fetch("/api/config/test", {method: "POST"});
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.detail || "Connection test failed.");
+    message.textContent = `Live request succeeded · ${data.model} · ${data.latency_ms} ms. Preview: ${data.response_preview || "(empty response)"}. This proves connectivity only, not code correctness.`;
+    toast("Live model connection verified.");
+    await refreshConfig();
+  } catch (error) {
+    message.textContent = error.message;
+    message.classList.add("error");
+  } finally {
+    button.disabled = false;
+    button.textContent = "Test live call";
+  }
+}
 async function clearSettings() {
   try {
     const response = await fetch("/api/config", {
@@ -239,6 +261,7 @@ $("close-settings").addEventListener("click", closeSettings);
 $("settings-modal").addEventListener("click", (event) => { if (event.target === $("settings-modal")) closeSettings(); });
 $("settings-form").addEventListener("submit", saveSettings);
 $("clear-settings").addEventListener("click", clearSettings);
+$("test-connection").addEventListener("click", testConnection);
 $("copy-patch").addEventListener("click", () => copyText($("patch-text").textContent, "Patch"));
 $("copy-test").addEventListener("click", () => copyText($("test-text").textContent, "Test"));
 $("export-report").addEventListener("click", exportReport);
