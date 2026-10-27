@@ -9,6 +9,7 @@ from pathlib import Path
 from threading import RLock
 from typing import Literal
 
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -16,6 +17,8 @@ from openai import OpenAI
 from pydantic import BaseModel, Field, SecretStr
 
 from patch_guard import inspect_patch
+
+load_dotenv()
 
 ROOT = Path(__file__).parent
 STATIC = ROOT / "static"
