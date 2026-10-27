@@ -16,14 +16,14 @@ AI-generated code can look plausible while missing the underlying bug, weakening
 
 ## What we built
 
-PatchPilot provides a dark, responsive workspace for a bug report and relevant source snippet. It can return a root-cause hypothesis, a proposed unified diff, a regression-test proposal, and risks/assumptions. The report explicitly marks verification as NOT RUN because the current MVP does not execute arbitrary generated code. This prevents the product from presenting unverified suggestions as successful repairs.
+PatchPilot provides a dark, responsive workspace for a bug report and relevant source snippet. It can return a root-cause hypothesis, a proposed unified diff, a regression-test proposal, and risks/assumptions. The report includes SHA-256 fingerprints for the submitted input and proposed patch, a heuristic patch preflight, and an optional second-pass skeptical review. It explicitly marks verification as NOT RUN because the current MVP does not execute arbitrary generated code. This prevents the product from presenting unverified suggestions as successful repairs.
 
 ## Architecture
 
 - FastAPI backend serves the product UI and API.
 - OpenAI-compatible client connects to Nebius Token Factory.
 - The operator selects the exact NVIDIA Nemotron model ID available to their account.
-- A deterministic demo mode allows reviewers to explore the interface without credentials; demo output is clearly labeled as simulated and is not a model call.
+- A second-pass reviewer can critique the first response using the same configured model; this is a separate pass, not an independent model or proof. A deterministic demo mode allows reviewers to explore the interface without credentials; demo output is clearly labeled as simulated and is not a model call.
 - The MVP does not execute model-generated code. A future isolated test runner should use a disposable, resource-limited container.
 
 ## NVIDIA / Nebius usage — complete before submission
