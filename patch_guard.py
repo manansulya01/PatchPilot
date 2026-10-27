@@ -30,7 +30,7 @@ def inspect_patch(patch: str) -> dict[str, Any]:
     if not text.strip():
         findings.append({"id": "empty_patch", "severity": "info", "message": "No patch was proposed; request more context or inspect the diagnosis."})
     elif not (has_hunk and has_file_header):
-        findings.append({"id": "diff_format", "severity": "warning", "message": "Output does not look like a complete unified diff; do not apply it as-is."})
+        findings.append({"id": "diff_format", "severity": "warning", "message": "Missing basic unified-diff file headers or hunk marker; do not apply it as-is."})
     if len(text) > 20000:
         findings.append({"id": "large_patch", "severity": "warning", "message": "Patch exceeds 20,000 characters; split it into smaller reviewable changes."})
 
