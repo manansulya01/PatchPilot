@@ -159,6 +159,15 @@ function renderReport(data) {
   $("analysis-text").textContent = data.analysis || "No root-cause explanation returned.";
   $("patch-text").textContent = data.patch || "# No patch proposed. More source context may be needed.";
   $("test-text").textContent = data.regression_test || "# No regression test proposed.";
+  const review = data.patch_review || {status: "UNAVAILABLE", warning_count: 0, added_lines_checked: 0, findings: [], limitations: "Preflight data was not returned."};
+  const reviewStatus = $("patch-review-status");
+  reviewStatus.textContent = review.status || "UNAVAILABLE";
+  reviewStatus.className = "guard-status " + (review.warning_count ? "warning" : (review.status === "NO HEURISTIC FLAGS" ? "clear" : "neutral"));
+  $("patch-review-summary").textContent = `${review.added_lines_checked || 0} added diff lines inspected · ${review.warning_count || 0} warning(s). ${review.limitations || ""}`;
+  const findings = Array.isArray(review.findings) ? review.findings : [];
+  $("patch-review-findings").innerHTML = findings.length
+    ? findings.map(item => '<li><strong>' + escapeHtml(item.severity || "info").toUpperCase() + ' · ' + escapeHtml(item.id || "finding") + '</strong>: ' + escapeHtml(item.message || "Review this item.") + '</li>').join("")
+    : '<li>No heuristic flags were triggered. This does not mean the patch is correct or safe.</li>';
   const risks = [
     ...(Array.isArray(data.assumptions) ? data.assumptions.map(x => "Assumption: " + x) : []),
     ...(Array.isArray(data.risks) ? data.risks : []),
