@@ -21,7 +21,8 @@ PatchPilot provides a dark, responsive workspace for a bug report and relevant s
 ## Architecture
 
 - FastAPI backend serves the product UI and API.
-- OpenAI-compatible client connects to Nebius Token Factory.
+- OpenAI-compatible client connects to Nebius Token Factory through an HTTPS `*.nebius.com` endpoint allowlist (HTTP only for local loopback development).
+- `PATCHPILOT_ALLOW_LIVE_INFERENCE` is a server-side kill switch for billable model requests. The public Render blueprint defaults it off, and the UI reflects that policy rather than implying live mode is available.
 - The operator selects the exact NVIDIA Nemotron model ID available to their account.
 - A second-pass reviewer can critique the first response using the same configured model; this is a separate pass, not an independent model or proof. A deterministic demo mode allows reviewers to explore the interface without credentials; demo output is clearly labeled as simulated and is not a model call.
 - The MVP does not execute model-generated code. A future isolated test runner should use a disposable, resource-limited container.
@@ -34,7 +35,7 @@ PatchPilot provides a dark, responsive workspace for a bug report and relevant s
 - [ ] Record real latency, errors, and relevant model limitations.
 - [ ] Confirm the live demo uses Nebius infrastructure and an NVIDIA open-source model.
 
-Current status: integration code exists, but live inference must be configured and tested before these claims can be made.
+Current status: integration code and automated policy tests exist, but live inference must be configured and tested before these claims can be made. CI passing validates the code checks and mocked tests; it does not prove a real Nebius call, a public deployment, or generated-patch correctness.
 
 ## Demo URL
 
