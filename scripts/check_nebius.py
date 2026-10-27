@@ -8,6 +8,7 @@ from __future__ import annotations
 import os
 import sys
 import time
+from urllib.parse import urlparse
 
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -27,6 +28,13 @@ def main() -> int:
         return 2
     if not model:
         print("MISSING: NEBIUS_MODEL is empty. Use the exact model ID in your catalog.")
+        return 2
+
+    parsed = urlparse(base_url)
+    host = (parsed.hostname or "").lower()
+    if parsed.scheme != "https" or not (host == "nebius.com" or host.endswith(".nebius.com")):
+        print("INVALID: NEBIUS_BASE_URL must use HTTPS on an official *.nebius.com host.")
+        print("This prevents accidentally sending credentials to an untrusted endpoint.")
         return 2
 
     print(f"Endpoint: {base_url}")
