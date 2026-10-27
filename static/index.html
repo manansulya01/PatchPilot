@@ -36,7 +36,7 @@
     <main class="main">
       <header class="topbar">
         <div class="breadcrumbs"><span>Workspace</span><span class="crumb-slash">/</span><strong>Bug analysis</strong></div>
-        <div class="topbar-right"><span class="privacy"><span class="privacy-dot"></span> Local workspace</span><button class="icon-button" id="top-settings" aria-label="Model connection settings">⚙</button></div>
+        <div class="topbar-right"><span class="privacy" id="privacy-label"><span class="privacy-dot"></span> Demo stays local</span><button class="icon-button" id="top-settings" aria-label="Model connection settings">⚙</button></div>
       </header>
       <div class="content">
         <section class="hero">
@@ -60,7 +60,7 @@
     for price in prices:
         total += round(price * (1 - discount), 2)
     return total</textarea></div>
-            <div class="input-foot"><span><span class="mini-dot"></span> Source stays in this workspace</span><span id="char-count">0 chars</span></div>
+            <div class="input-foot"><span id="source-privacy-note"><span class="mini-dot"></span> Source stays in this browser for Demo mode</span><span id="char-count">0 chars</span></div>
             <div class="run-row"><div class="mode-select"><span class="mode-dot"></span><select id="mode" aria-label="Analysis mode"><option value="demo">Demo mode · no API</option><option value="live">Live Nemotron · Nebius</option></select></div><button id="analyze" class="primary-button"><span class="button-icon">✳</span> Analyze bug <span class="button-arrow">↗</span></button></div>
             <div class="demo-note" id="mode-note">Demo output is illustrative. It does not call an AI model or execute tests.</div><label class="challenge-toggle" for="challenge-pass"><input id="challenge-pass" type="checkbox" checked> Run a second, skeptical model review in Live mode <span>adds a second model call</span></label>
           </div>
