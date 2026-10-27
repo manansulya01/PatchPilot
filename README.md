@@ -41,7 +41,7 @@ A Docker-based Render blueprint is included in `render.yaml`. Import this reposi
 2. In PatchPilot, open **Model connection**, paste your API key, and enter the exact model ID shown as available in your Token Factory account. The key is held in server memory only until the process stops; it is not saved to `.env` or logged by this app.
 3. Select **Live model** and analyze a bug.
 
-Default API base URL: `https://api.tokenfactory.nebius.com/v1`. If Nebius gives your account a different documented endpoint, use that endpoint in the connection panel. Do not commit API keys, share them in screenshots, or place them in frontend JavaScript.
+Suggested starting model ID: `nvidia/Nemotron-3_5-Lightning` (confirm it is available to your account). Official Nebius documentation lists Nemotron 3.5 Lightning for coding and agentic workflows; the app does not silently switch models. Default API base URL: `https://api.tokenfactory.nebius.com/v1`. If Nebius gives your account a different documented endpoint, use that endpoint in the connection panel. Do not commit API keys, share them in screenshots, or place them in frontend JavaScript.
 
 If you don't have access/credits yet, use **Demo mode** to explore the UI. Demo output is illustrative, not an actual model response and not proof that a patch works. The optional adversarial review uses a second model call and may increase latency and account usage. A submission to the Nebius x NVIDIA hackathon must use Nebius infrastructure and an NVIDIA open-source model in the actual working project.
 
