@@ -10,6 +10,7 @@
 - Example bug scenarios to try immediately.
 - Nebius Token Factory integration through the OpenAI-compatible chat completions API.
 - Server-side API key handling; keys are kept in process memory and are not written to disk.
+- A user-triggered one-request live connection test reports the selected model and latency without exposing credentials.
 - Clearly separated live-model and demo modes, with an explicit notice that live mode sends the bug report and source code to Nebius for inference.
 - Safe-by-default workflow: the MVP proposes code and tests but does not execute arbitrary model-generated code.
 - Downloadable JSON report with SHA-256 fingerprints for the input and proposed patch.
@@ -39,7 +40,7 @@ A Docker-based Render blueprint is included in `render.yaml`. Import this reposi
 
 1. Obtain access to Nebius Token Factory and confirm that your account can call an NVIDIA Nemotron model.
 2. In PatchPilot, open **Model connection**, paste your API key, and enter the exact model ID shown as available in your Token Factory account. The key is held in server memory only until the process stops; it is not saved to `.env` or logged by this app.
-3. Select **Live model** and analyze a bug.
+3. Click **Test live call** to confirm one real request succeeds; this uses a small amount of account usage. Then select **Live Nemotron** and analyze a bug.
 
 Suggested starting model ID: `nvidia/Nemotron-3_5-Lightning` (confirm it is available to your account). Official Nebius documentation lists Nemotron 3.5 Lightning for coding and agentic workflows; the app does not silently switch models. Default API base URL: `https://api.tokenfactory.nebius.com/v1`. If Nebius gives your account a different documented endpoint, use that endpoint in the connection panel. Do not commit API keys, share them in screenshots, or place them in frontend JavaScript.
 
@@ -62,6 +63,7 @@ See [Product positioning and differentiation](docs/PRODUCT_POSITIONING.md) for t
 - `GET /api/health` — health and connection status.
 - `GET /api/config` — safe configuration status (never returns the API key).
 - `POST /api/config` — set/clear the in-memory model connection.
+- `POST /api/config/test` — send one small live completion to verify access; disabled when runtime configuration is disabled.
 - `POST /api/analyze` — analyze a bug using demo mode or the configured model.
 
 ## Tests
