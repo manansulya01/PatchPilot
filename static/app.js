@@ -59,7 +59,7 @@ async function refreshConfig() {
     const response = await fetch("/api/config");
     const data = await response.json();
     const runtimeConfigAllowed = data.runtime_config_allowed !== false;
-    $("open-settings").classList.toggle("hidden", !runtimeConfigAllowed);
+    $("open-settings").disabled = !runtimeConfigAllowed;
     $("top-settings").classList.toggle("hidden", !runtimeConfigAllowed);
     $("connection-title").textContent = data.configured ? "Nebius connected" : (runtimeConfigAllowed ? "Demo mode" : "Demo-only deployment");
     $("connection-subtitle").textContent = data.configured ? data.model : (runtimeConfigAllowed ? "No API key needed" : "Live setup disabled here");
@@ -254,8 +254,8 @@ $("mode").addEventListener("change", () => {
     ? "Live mode calls your configured model. It requires working Nebius credentials and an available model ID."
     : "Demo output is illustrative. It does not call an AI model or execute tests.";
   $("mode-note").style.color = live ? "#a8c7ff" : "";
-  $("privacy-label").innerHTML = '<span class="privacy-dot"></span> ' + (live ? "Sent to Nebius API" : "Demo stays local");
-  $("source-privacy-note").innerHTML = '<span class="mini-dot"></span> ' + (live ? "Bug report and source code are sent to Nebius for inference" : "Source stays in this browser for Demo mode");
+  $("privacy-label").innerHTML = '<span class="privacy-dot"></span> ' + (live ? "Nebius API on submit" : "Demo stays local");
+  $("source-privacy-note").innerHTML = '<span class="mini-dot"></span> ' + (live ? "Bug report and source code will be sent to Nebius on submit" : "Source stays in this browser for Demo mode");
   $("mode-select");
 });
 $("open-settings").addEventListener("click", openSettings);
