@@ -35,6 +35,8 @@ PatchPilot provides a dark, responsive workspace for a bug report and relevant s
 - [ ] Record real latency, errors, and relevant model limitations.
 - [ ] Confirm the live demo uses Nebius infrastructure and an NVIDIA open-source model.
 
+Setup guide: [Nebius Token Factory and NVIDIA model verification](NEBIUS_SETUP.md). The repository also includes `scripts/check_nebius.py`, a credential-safe preflight that validates the endpoint, checks the model catalog, and sends one small live request.
+
 Current status: integration code and automated policy tests exist, but live inference must be configured and tested before these claims can be made. CI passing validates the code checks and mocked tests; it does not prove a real Nebius call, a public deployment, or generated-patch correctness.
 
 ## Demo URL

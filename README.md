@@ -42,6 +42,15 @@ A Docker-based Render blueprint is included in `render.yaml`. Import this reposi
 
 ## Enable live Nebius inference
 
+For a guided account/API-key setup and a safe command-line preflight, follow [the Nebius setup checklist](docs/NEBIUS_SETUP.md). The preflight checks the catalog and sends one small real inference request without printing credentials:
+
+```powershell
+.\\.venv\\Scripts\\python.exe scripts/check_nebius.py
+```
+
+It can consume a small amount of account usage. It validates that the endpoint uses HTTPS on an official `*.nebius.com` host before sending the key.
+
+
 1. Obtain access to Nebius Token Factory and confirm that your account can call an NVIDIA Nemotron model.
 2. In PatchPilot, open **Model connection**, paste your API key, and enter the exact model ID shown as available in your Token Factory account. The key is held in server memory only until the process stops; it is not saved to `.env` or logged by this app.
 3. Click **Test live call** to confirm one real request succeeds; this uses a small amount of account usage. Then select **Live Nemotron** and analyze a bug.
