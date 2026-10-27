@@ -48,8 +48,8 @@ https://github.com/manansulya01/PatchPilot
 
 1. State the problem: code suggestions are not proof.
 2. Load the sample bug and source.
-3. Show the model connection and exact NVIDIA model, with credentials hidden.
-4. Run a live analysis and show the root-cause hypothesis, patch, and regression test.
+3. Show the model connection, click Test live call, and show the exact NVIDIA model with credentials hidden.
+4. Run a live analysis and show the root-cause hypothesis, patch preflight, second-pass review, regression test, and report fingerprints.
 5. Emphasize that tests are marked NOT RUN unless an actual isolated test runner ran them.
 6. End with the product's verification-first principle.
 
