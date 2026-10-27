@@ -37,6 +37,8 @@ def test_demo_analysis_is_explicitly_unverified():
     assert data["mode"] == "demo"
     assert data["verification"]["executed"] is False
     assert data["verification"]["label"] == "NOT RUN"
+    assert "patch_review" in data
+    assert data["patch_review"]["status"] in {"REVIEW REQUIRED", "NO HEURISTIC FLAGS", "NO PATCH"}
     assert "not" in data["risks"][1].lower() or "no code" in data["risks"][1].lower()
 
 
