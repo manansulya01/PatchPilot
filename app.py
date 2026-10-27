@@ -8,6 +8,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from threading import RLock
 from typing import Literal
+from urllib.parse import urlsplit
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
@@ -139,8 +140,12 @@ def set_config(settings: ConnectionSettings):
         base_url = settings.base_url.strip().rstrip("/")
         model = settings.model.strip()
 
-        if not base_url.startswith("https://") and not base_url.startswith("http://127.0.0.1"):
-            raise HTTPException(400, "Use an HTTPS API base URL.")
+        parsed_url = urlsplit(base_url)
+        host = (parsed_url.hostname or "").lower()
+        is_nebius_https = parsed_url.scheme == "https" and (host == "nebius.com" or host.endswith(".nebius.com"))
+        is_local_loopback = parsed_url.scheme == "http" and host in {"127.0.0.1", "localhost", "::1"}
+        if parsed_url.username or parsed_url.password or not (is_nebius_https or is_local_loopback):
+            raise HTTPException(400, "Use an HTTPS Nebius endpoint; HTTP is allowed only for localhost loopback testing.")
         if not key:
             raise HTTPException(400, "Enter an API key. The key is kept in memory only.")
         if not model:
