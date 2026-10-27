@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0e14">
+  <meta name="description" content="PatchPilot — verification-first AI debugging. Inspect fixes, assumptions, and evidence before trusting a patch.">
+  <title>PatchPilot — Proof before patches</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="/" aria-label="PatchPilot home">
+        <span class="brand-mark"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M7 7h12l6 6v12H7z" fill="none" stroke="currentColor" stroke-width="2"/><path d="m12 17 3 3 6-7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span><strong>patchpilot</strong><small>PROOF BEFORE PATCHES</small></span>
+      </a>
+      <div class="side-label">WORKSPACE</div>
+      <button class="nav-item active" id="new-analysis"><span>＋</span> New analysis <kbd>⌘ K</kbd></button>
+      <button class="nav-item" id="load-example"><span>◈</span> Load example</button>
+      <div class="side-label side-label-spaced">TRUST STATUS</div>
+      <div class="trust-card">
+        <div class="trust-icon">✓</div>
+        <div><strong>Evidence over confidence</strong><p>Every proposal is marked unverified until you test it.</p></div>
+      </div>
+      <div class="sidebar-bottom">
+        <button class="connection-card" id="open-settings">
+          <span class="status-dot" id="connection-dot"></span>
+          <span class="connection-copy"><strong id="connection-title">Demo mode</strong><small id="connection-subtitle">No API key needed</small></span>
+          <span class="chevron">↗</span>
+        </button>
+        <div class="sidebar-foot">BUILT FOR DEVELOPERS <span>·</span> v0.1</div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="breadcrumbs"><span>Workspace</span><span class="crumb-slash">/</span><strong>Bug analysis</strong></div>
+        <div class="topbar-right"><span class="privacy"><span class="privacy-dot"></span> Local workspace</span><button class="icon-button" id="top-settings" aria-label="Model connection settings">⚙</button></div>
+      </header>
+      <div class="content">
+        <section class="hero">
+          <div class="eyebrow"><span class="eyebrow-line"></span> VERIFICATION-FIRST DEBUGGING</div>
+          <h1>Don't trust the patch.<br><span>Challenge it.</span></h1>
+          <p class="hero-sub">Investigate a bug, propose a fix, and see exactly what is — and isn't — verified.</p>
+        </section>
+
+        <section class="workspace-grid">
+          <div class="panel input-panel">
+            <div class="panel-head"><div><span class="step-number">01</span><h2>Describe the bug</h2></div><span class="small-pill">INPUT</span></div>
+            <label for="bug-description">BUG REPORT</label>
+            <textarea id="bug-description" rows="4" placeholder="What went wrong? Include expected vs. actual behavior…">The checkout total is wrong when a discount is applied to a cart with multiple items. The total should apply the discount to the subtotal and round only the final amount.</textarea>
+            <div class="field-row">
+              <label for="language">LANGUAGE</label>
+              <select id="language"><option value="python">Python</option><option value="javascript">JavaScript</option><option value="typescript">TypeScript</option><option value="other">Other</option></select>
+            </div>
+            <div class="editor-head"><span>RELEVANT SOURCE CODE</span><button id="reset-code" class="text-button">Reset sample</button></div>
+            <div class="code-editor"><div class="line-numbers" id="line-numbers">1<br>2<br>3<br>4<br>5</div><textarea id="source-code" spellcheck="false" aria-label="Source code">def calculate_total(prices, discount):
+    total = 0
+    for price in prices:
+        total += round(price * (1 - discount), 2)
+    return total</textarea></div>
+            <div class="input-foot"><span><span class="mini-dot"></span> Source stays in this workspace</span><span id="char-count">0 chars</span></div>
+            <div class="run-row"><div class="mode-select"><span class="mode-dot"></span><select id="mode" aria-label="Analysis mode"><option value="demo">Demo mode · no API</option><option value="live">Live Nemotron · Nebius</option></select></div><button id="analyze" class="primary-button"><span class="button-icon">✳</span> Analyze bug <span class="button-arrow">↗</span></button></div>
+            <div class="demo-note" id="mode-note">Demo output is illustrative. It does not call an AI model or execute tests.</div>
+          </div>
+
+          <div class="panel results-panel">
+            <div class="panel-head"><div><span class="step-number">02</span><h2>Evidence report</h2></div><span id="result-state" class="state-pill neutral"><span class="state-dot"></span> AWAITING INPUT</span></div>
+            <div id="empty-state" class="empty-state">
+              <div class="empty-graphic"><div class="graphic-ring ring-one"></div><div class="graphic-ring ring-two"></div><div class="graphic-core">✓</div><span class="graphic-spark spark-one">✳</span><span class="graphic-spark spark-two">·</span></div>
+              <h3>Your evidence starts here.</h3>
+              <p>Run an analysis to get a root-cause hypothesis, proposed patch, and regression-test suggestion.</p>
+              <button id="try-example" class="secondary-button">Try the checkout example <span>→</span></button>
+            </div>
+            <div id="loading-state" class="loading-state hidden"><div class="loader"></div><h3>Investigating the bug<span class="loading-ellipsis">…</span></h3><p id="loading-caption">Preparing the analysis request</p><div class="loading-steps"><span class="active">Understand</span><i></i><span>Propose</span><i></i><span>Report</span></div></div>
+            <div id="report" class="report hidden">
+              <div class="report-meta"><span id="model-badge" class="model-badge">DEMO MODE</span><span id="elapsed">—</span><button class="text-button" id="export-report">Export JSON ↓</button></div>
+              <section class="report-section"><div class="section-title"><span class="section-icon">⌕</span><h3>Root-cause hypothesis</h3></div><p id="analysis-text" class="analysis-text"></p></section>
+              <section class="report-section"><div class="section-title"><span class="section-icon patch-icon">±</span><h3>Proposed patch</h3><button class="text-button push-right" id="copy-patch">Copy diff</button></div><pre class="output-code"><code id="patch-text"></code></pre></section>
+              <section class="report-section"><div class="section-title"><span class="section-icon test-icon">⌘</span><h3>Regression test proposal</h3><button class="text-button push-right" id="copy-test">Copy test</button></div><pre class="output-code test-code"><code id="test-text"></code></pre></section>
+              <section class="verification-card"><div class="verification-heading"><span class="verification-symbol">!</span><div><strong>Verification status</strong><small>Evidence, not assumptions</small></div><span class="not-run">NOT RUN</span></div><p>No source code was executed and no tests were run by PatchPilot. Review the proposal and validate it in a safe test environment.</p></section>
+              <section class="report-section" id="risks-section"><div class="section-title"><span class="section-icon risk-icon">△</span><h3>Assumptions &amp; risks</h3></div><ul id="risks-list" class="risk-list"></ul></section>
+              <div class="report-actions"><button id="new-run" class="secondary-button">← Edit bug report</button><span>Review before applying any patch.</span></div>
+            </div>
+          </div>
+        </section>
+        <footer class="page-footer"><span>PATCHPILOT <span class="footer-dot">·</span> VERIFICATION-FIRST AI</span><span>Model output can be wrong. Always validate.</span></footer>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-backdrop hidden" id="settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+    <div class="modal">
+      <div class="modal-head"><div><span class="eyebrow">MODEL CONNECTION</span><h2 id="settings-title">Connect Nebius</h2></div><button class="icon-button" id="close-settings" aria-label="Close settings">×</button></div>
+      <p class="modal-intro">Configure live NVIDIA Nemotron inference through Nebius Token Factory. Your key is held in server memory only and is cleared when the server restarts.</p>
+      <form id="settings-form">
+        <label for="api-key">NEBIUS API KEY</label><input id="api-key" type="password" autocomplete="off" placeholder="Paste key here" />
+        <label for="base-url">API BASE URL</label><input id="base-url" type="url" value="https://api.tokenfactory.nebius.com/v1" required />
+        <label for="model-id">MODEL ID <span class="muted-inline">Use exact ID from your catalog</span></label><input id="model-id" type="text" placeholder="NVIDIA Nemotron model ID" required />
+        <div class="modal-warning"><span>ⓘ</span><p>No key is needed for demo mode. Live mode requires valid account access, credits/billing, and an available NVIDIA open-source model. Do not share or commit your key.</p></div>
+        <div class="modal-actions"><button type="button" id="clear-settings" class="secondary-button">Clear connection</button><button type="submit" id="save-settings" class="primary-button">Save connection <span>→</span></button></div>
+        <p id="settings-message" class="settings-message" role="status"></p>
+      </form>
+    </div>
+  </div>
+  <div id="toast" class="toast hidden" role="status"></div>
+  <script src="/static/app.js"></script>
+</body>
+</html>
