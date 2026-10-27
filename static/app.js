@@ -58,8 +58,11 @@ async function refreshConfig() {
   try {
     const response = await fetch("/api/config");
     const data = await response.json();
-    $("connection-title").textContent = data.configured ? "Nebius connected" : "Demo mode";
-    $("connection-subtitle").textContent = data.configured ? data.model : "No API key needed";
+    const runtimeConfigAllowed = data.runtime_config_allowed !== false;
+    $("open-settings").classList.toggle("hidden", !runtimeConfigAllowed);
+    $("top-settings").classList.toggle("hidden", !runtimeConfigAllowed);
+    $("connection-title").textContent = data.configured ? "Nebius connected" : (runtimeConfigAllowed ? "Demo mode" : "Demo-only deployment");
+    $("connection-subtitle").textContent = data.configured ? data.model : (runtimeConfigAllowed ? "No API key needed" : "Live setup disabled here");
     $("connection-dot").classList.toggle("connected", Boolean(data.configured));
     if (data.base_url) $("base-url").value = data.base_url;
     if (data.model) $("model-id").value = data.model;
