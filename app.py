@@ -61,6 +61,7 @@ def _connection_snapshot() -> dict:
             "base_url": _config["base_url"],
             "model": _config["model"],
             "key_present": bool(_config["api_key"]),
+            "runtime_config_allowed": os.getenv("PATCHPILOT_ALLOW_RUNTIME_CONFIG", "true").lower() in {"1", "true", "yes"},
         }
 
 
