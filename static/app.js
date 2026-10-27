@@ -227,6 +227,8 @@ $("mode").addEventListener("change", () => {
     ? "Live mode calls your configured model. It requires working Nebius credentials and an available model ID."
     : "Demo output is illustrative. It does not call an AI model or execute tests.";
   $("mode-note").style.color = live ? "#a8c7ff" : "";
+  $("privacy-label").innerHTML = '<span class="privacy-dot"></span> ' + (live ? "Sent to Nebius API" : "Demo stays local");
+  $("source-privacy-note").innerHTML = '<span class="mini-dot"></span> ' + (live ? "Bug report and source code are sent to Nebius for inference" : "Source stays in this browser for Demo mode");
   $("mode-select");
 });
 $("open-settings").addEventListener("click", openSettings);
