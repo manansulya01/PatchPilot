@@ -14,7 +14,7 @@ PatchPilot is a developer-facing debugging workbench, not a claim that a new pat
 
 - **Review-first UI:** findings, risks, test ideas, and provenance are presented together rather than hidden in raw chat.
 - **Challenge pass:** a separate model call is prompted to look for flaws in the proposed patch. It is not a truly independent model and can still agree with an incorrect answer.
-- **Preflight signals:** a small deterministic ruleset flags selected risky patterns and malformed/oversized diffs. It is not a complete static analyzer or security boundary.
+- **Preflight signals:** a small deterministic ruleset flags selected risky patterns and diffs missing basic unified-diff headers/hunks or oversized diffs. It is not a complete static analyzer or security boundary.
 - **Evidence honesty:** model output, heuristic findings, and actual execution evidence are separate concepts. The current version does not execute user code and therefore never claims a fix passed tests.
 
 ## Current limitations
