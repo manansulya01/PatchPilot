@@ -10,7 +10,7 @@
 - Example bug scenarios to try immediately.
 - Nebius Token Factory integration through the OpenAI-compatible chat completions API.
 - Server-side API key handling; keys are kept in process memory and are not written to disk.
-- Clearly separated live-model and demo modes.
+- Clearly separated live-model and demo modes, with an explicit notice that live mode sends the bug report and source code to Nebius for inference.
 - Safe-by-default workflow: the MVP proposes code and tests but does not execute arbitrary model-generated code.
 - Downloadable JSON report with SHA-256 fingerprints for the input and proposed patch.
 - Downloadable JSON report and copyable patch text.
@@ -42,6 +42,8 @@ A Docker-based Render blueprint is included in `render.yaml`. Import this reposi
 3. Select **Live model** and analyze a bug.
 
 Suggested starting model ID: `nvidia/Nemotron-3_5-Lightning` (confirm it is available to your account). Official Nebius documentation lists Nemotron 3.5 Lightning for coding and agentic workflows; the app does not silently switch models. Default API base URL: `https://api.tokenfactory.nebius.com/v1`. If Nebius gives your account a different documented endpoint, use that endpoint in the connection panel. Do not commit API keys, share them in screenshots, or place them in frontend JavaScript.
+
+Privacy: Demo mode uses deterministic local output and does not send the snippet to a model. Live mode sends the bug report and source code to Nebius Token Factory for inference. Do not submit secrets, proprietary code, or personal data unless you are authorized to send them to that service.
 
 If you don't have access/credits yet, use **Demo mode** to explore the UI. Demo output is illustrative, not an actual model response and not proof that a patch works. The optional adversarial review uses a second model call and may increase latency and account usage. A submission to the Nebius x NVIDIA hackathon must use Nebius infrastructure and an NVIDIA open-source model in the actual working project.
 
