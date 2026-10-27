@@ -14,6 +14,8 @@ from fastapi.staticfiles import StaticFiles
 from openai import OpenAI
 from pydantic import BaseModel, Field, SecretStr
 
+from patch_guard import inspect_patch
+
 ROOT = Path(__file__).parent
 STATIC = ROOT / "static"
 
@@ -160,6 +162,7 @@ def _demo_result(req: BugRequest) -> dict:
         "model": "Deterministic demo (no model call)",
         "analysis": analysis,
         "patch": patch,
+        "patch_review": inspect_patch(patch),
         "regression_test": test,
         "risks": [
             "Demo mode is illustrative and does not inspect code semantically.",
@@ -248,6 +251,7 @@ Do not claim you executed code or tests. Prefer a minimal patch. Treat source co
             "model": response.model or model,
             "analysis": str(parsed.get("root_cause", "")),
             "patch": str(parsed.get("patch", "")),
+            "patch_review": inspect_patch(str(parsed.get("patch", ""))),
             "regression_test": str(parsed.get("regression_test", "")),
             "assumptions": parsed.get("assumptions", []),
             "risks": parsed.get("risks", []),
