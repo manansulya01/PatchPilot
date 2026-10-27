@@ -59,14 +59,25 @@ async function refreshConfig() {
     const response = await fetch("/api/config");
     const data = await response.json();
     const runtimeConfigAllowed = data.runtime_config_allowed !== false;
+    const liveInferenceAllowed = data.live_inference_allowed !== false;
+    const liveOption = $("mode").querySelector('option[value="live"]');
+    if (liveOption) liveOption.disabled = !liveInferenceAllowed;
+    if (!liveInferenceAllowed && $("mode").value === "live") $("mode").value = "demo";
     $("open-settings").disabled = !runtimeConfigAllowed;
     $("top-settings").classList.toggle("hidden", !runtimeConfigAllowed);
-    $("connection-title").textContent = data.configured ? "Nebius connected" : (runtimeConfigAllowed ? "Demo mode" : "Demo-only deployment");
-    $("connection-subtitle").textContent = data.configured ? data.model : (runtimeConfigAllowed ? "No API key needed" : "Live setup disabled here");
-    $("connection-dot").classList.toggle("connected", Boolean(data.configured));
+    $("connection-title").textContent = !liveInferenceAllowed
+      ? "Demo-only deployment"
+      : (data.configured ? "Nebius connected" : (runtimeConfigAllowed ? "Demo mode" : "Demo-only deployment"));
+    $("connection-subtitle").textContent = !liveInferenceAllowed
+      ? "Live model requests disabled here"
+      : (data.configured ? data.model : (runtimeConfigAllowed ? "No API key needed" : "Live setup disabled here"));
+    $("connection-dot").classList.toggle("connected", Boolean(data.configured) && liveInferenceAllowed);
     if (data.base_url) $("base-url").value = data.base_url;
     if (data.model) $("model-id").value = data.model;
-    if (data.configured && $("mode").value === "demo") {
+    if (!liveInferenceAllowed) {
+      $("mode-note").textContent = "Live inference is disabled by the server on this deployment. Demo mode is available; output is illustrative and does not call an AI model.";
+      $("privacy-label").innerHTML = '<span class="privacy-dot"></span> Demo mode · no model call';
+    } else if (data.configured && $("mode").value === "demo") {
       $("mode-note").textContent = "A model connection is configured. Select Live Nemotron to use it.";
     }
   } catch (_) {
