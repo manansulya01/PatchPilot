@@ -63,8 +63,8 @@ async function refreshConfig() {
     const liveOption = $("mode").querySelector('option[value="live"]');
     if (liveOption) liveOption.disabled = !liveInferenceAllowed;
     if (!liveInferenceAllowed && $("mode").value === "live") $("mode").value = "demo";
-    $("open-settings").disabled = !runtimeConfigAllowed;
-    $("top-settings").classList.toggle("hidden", !runtimeConfigAllowed);
+    $("open-settings").disabled = !runtimeConfigAllowed || !liveInferenceAllowed;
+    $("top-settings").classList.toggle("hidden", !runtimeConfigAllowed || !liveInferenceAllowed);
     $("connection-title").textContent = !liveInferenceAllowed
       ? "Demo-only deployment"
       : (data.configured ? "Nebius connected" : (runtimeConfigAllowed ? "Demo mode" : "Demo-only deployment"));
@@ -77,6 +77,7 @@ async function refreshConfig() {
     if (!liveInferenceAllowed) {
       $("mode-note").textContent = "Live inference is disabled by the server on this deployment. Demo mode is available; output is illustrative and does not call an AI model.";
       $("privacy-label").innerHTML = '<span class="privacy-dot"></span> Demo mode · no model call';
+      $("source-privacy-note").innerHTML = '<span class="mini-dot"></span> Source stays in this browser for Demo mode';
     } else if (data.configured && $("mode").value === "demo") {
       $("mode-note").textContent = "A model connection is configured. Select Live Nemotron to use it.";
     }
