@@ -100,7 +100,7 @@
       <form id="settings-form">
         <label for="api-key">NEBIUS API KEY</label><input id="api-key" type="password" autocomplete="off" placeholder="Paste key here" />
         <label for="base-url">API BASE URL</label><input id="base-url" type="url" value="https://api.tokenfactory.nebius.com/v1" required />
-        <label for="model-id">MODEL ID <span class="muted-inline">Use exact ID from your catalog</span></label><input id="model-id" type="text" placeholder="NVIDIA Nemotron model ID" required />
+        <label for="model-id">MODEL ID <span class="muted-inline">Suggested ID — confirm availability</span></label><input id="model-id" type="text" placeholder="nvidia/Nemotron-3_5-Lightning" required />
         <div class="modal-warning"><span>ⓘ</span><p>No key is needed for demo mode. Live mode requires valid account access, credits/billing, and an available NVIDIA open-source model. Do not share or commit your key.</p></div>
         <div class="modal-actions"><button type="button" id="clear-settings" class="secondary-button">Clear connection</button><button type="submit" id="save-settings" class="primary-button">Save connection <span>→</span></button></div>
         <p id="settings-message" class="settings-message" role="status"></p>
