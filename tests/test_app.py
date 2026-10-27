@@ -45,6 +45,11 @@ def test_demo_analysis_is_explicitly_unverified():
     assert "not" in data["risks"][1].lower() or "no code" in data["risks"][1].lower()
 
 
+def test_connection_test_requires_configuration():
+    response = client.post("/api/config/test")
+    assert response.status_code == 503
+
+
 def test_live_mode_requires_configuration():
     response = client.post("/api/analyze", json={
         "description": "A sufficiently detailed bug report.",
