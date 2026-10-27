@@ -213,3 +213,31 @@ def test_config_exposes_live_inference_policy_without_secrets(monkeypatch):
     assert response.status_code == 200
     assert response.json()["live_inference_allowed"] is False
     assert "api_key" not in response.json()
+
+
+def test_rejects_untrusted_https_endpoint_to_protect_api_key():
+    response = client.post("/api/config", json={
+        "api_key": "secret-example",
+        "base_url": "https://attacker.example/v1",
+        "model": "example/model",
+    })
+    assert response.status_code == 400
+    assert "Nebius endpoint" in response.json()["detail"]
+
+
+def test_rejects_nebius_lookalike_hostname():
+    response = client.post("/api/config", json={
+        "api_key": "secret-example",
+        "base_url": "https://api.tokenfactory.nebius.com.attacker.example/v1",
+        "model": "example/model",
+    })
+    assert response.status_code == 400
+
+
+def test_allows_official_nebius_endpoint():
+    response = client.post("/api/config", json={
+        "api_key": "secret-example",
+        "base_url": "https://api.tokenfactory.nebius.com/v1",
+        "model": "example/model",
+    })
+    assert response.status_code == 200
