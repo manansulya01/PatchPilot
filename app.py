@@ -5,7 +5,7 @@ import os
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from threading import Lock
+from threading import RLock
 from typing import Literal
 
 from fastapi import FastAPI, HTTPException
@@ -25,7 +25,7 @@ app = FastAPI(
 app.mount("/static", StaticFiles(directory=STATIC), name="static")
 
 # Credentials are intentionally process-memory-only. Restarting the server clears them.
-_config_lock = Lock()
+_config_lock = RLock()
 _config: dict[str, str | bool] = {
     "api_key": os.getenv("NEBIUS_API_KEY", ""),
     "base_url": os.getenv("NEBIUS_BASE_URL", "https://api.tokenfactory.nebius.com/v1"),
