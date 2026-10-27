@@ -32,14 +32,14 @@ _config_lock = RLock()
 _config: dict[str, str | bool] = {
     "api_key": os.getenv("NEBIUS_API_KEY", ""),
     "base_url": os.getenv("NEBIUS_BASE_URL", "https://api.tokenfactory.nebius.com/v1"),
-    "model": os.getenv("NEBIUS_MODEL", ""),
+    "model": os.getenv("NEBIUS_MODEL", "nvidia/Nemotron-3_5-Lightning"),
 }
 
 
 class ConnectionSettings(BaseModel):
     api_key: SecretStr | None = None
     base_url: str = Field(default="https://api.tokenfactory.nebius.com/v1", max_length=500)
-    model: str = Field(default="", max_length=200)
+    model: str = Field(default="nvidia/Nemotron-3_5-Lightning", max_length=200)
     clear: bool = False
 
 
