@@ -79,3 +79,38 @@ def test_rejects_insecure_remote_base_url():
         "model": "example/model",
     })
     assert response.status_code == 400
+
+
+def test_connection_test_reports_success_without_key_leak(monkeypatch):
+    from types import SimpleNamespace
+
+    with _config_lock:
+        _config["api_key"] = "test-secret"
+        _config["model"] = "nvidia/Nemotron-3_5-Lightning"
+        _config["base_url"] = "https://api.tokenfactory.nebius.com/v1"
+
+    class FakeOpenAI:
+        def __init__(self, **kwargs):
+            self.chat = SimpleNamespace(
+                completions=SimpleNamespace(
+                    create=lambda **request: SimpleNamespace(
+                        model=request["model"],
+                        choices=[SimpleNamespace(message=SimpleNamespace(content="PATCHPILOT_CONNECTION_OK"))],
+                    )
+                )
+            )
+
+    monkeypatch.setattr("app.OpenAI", FakeOpenAI)
+    response = client.post("/api/config/test")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["ok"] is True
+    assert data["model"] == "nvidia/Nemotron-3_5-Lightning"
+    assert data["response_preview"] == "PATCHPILOT_CONNECTION_OK"
+    assert "test-secret" not in response.text
+
+
+def test_connection_test_disabled_on_public_deployment(monkeypatch):
+    monkeypatch.setenv("PATCHPILOT_ALLOW_RUNTIME_CONFIG", "false")
+    response = client.post("/api/config/test")
+    assert response.status_code == 403
