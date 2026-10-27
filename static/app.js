@@ -41,6 +41,8 @@ function loadExample() {
   $("source-code").value = sampleCode;
   $("mode").value = "demo";
   $("mode-note").textContent = "Demo output is illustrative. It does not call an AI model or execute tests.";
+  $("privacy-label").innerHTML = '<span class="privacy-dot"></span> Demo stays local';
+  $("source-privacy-note").innerHTML = '<span class="mini-dot"></span> Source stays in this browser for Demo mode';
   updateEditorMeta();
   showView("empty");
   setStatus("AWAITING INPUT");
