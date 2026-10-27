@@ -22,7 +22,7 @@
 
 ## Run locally
 
-Requires Python 3.11+.
+Requires Python 3.11+. The app loads an optional local `.env` file; copy `.env.example` to `.env` and fill it in only on your own machine.
 
 ```powershell
 py -m venv .venv
