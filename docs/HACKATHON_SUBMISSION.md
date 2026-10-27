@@ -28,7 +28,7 @@ PatchPilot provides a dark, responsive workspace for a bug report and relevant s
 
 ## NVIDIA / Nebius usage — complete before submission
 
-- [ ] Record the exact NVIDIA open-source model name and model ID used.
+- [ ] Record the exact NVIDIA open-source model name and model ID used. Suggested starting ID: `nvidia/Nemotron-3_5-Lightning`; verify it is available to your account.
 - [ ] Capture evidence of a successful live request through Nebius Token Factory.
 - [ ] Describe what Token Factory enabled in the workflow.
 - [ ] Record real latency, errors, and relevant model limitations.
