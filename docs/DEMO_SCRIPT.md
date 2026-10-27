@@ -9,10 +9,10 @@ Keep the recording under three minutes. Use a clean browser window and hide secr
 Show the checkout bug report and the short Python function. Explain expected versus actual behavior.
 
 ## 0:45–1:10 — Show real model usage
-Open Model Connection. Show the exact NVIDIA Nemotron model name and that the request is routed through Nebius Token Factory. Never show the API key. Run a live analysis. If live inference is not configured, do not pretend demo mode is a model call.
+Open Model Connection. Show the exact NVIDIA Nemotron model name and that the request is routed through Nebius Token Factory. Never show the API key. Run a live analysis. If live inference is not configured, do not pretend demo mode is a model call. Live mode sends the bug report and source code to Nebius.
 
 ## 1:10–2:05 — Inspect the result
-Walk through the root-cause hypothesis, minimal patch, regression-test proposal, assumptions, and risks. Export the JSON report.
+Walk through the root-cause hypothesis, proposed diff, patch preflight, skeptical second-pass review, regression-test proposal, assumptions, risks, and SHA-256 input/patch fingerprints. Export the JSON report.
 
 ## 2:05–2:35 — Explain verification honestly
 Point at "NOT RUN." Explain that the current MVP does not execute arbitrary model-generated code, so it refuses to claim tests passed. If a separately isolated test runner is implemented before recording, demonstrate the original regression test failing and the patched test passing using actual logs.
