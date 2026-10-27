@@ -74,6 +74,8 @@ def get_config():
 
 @app.post("/api/config")
 def set_config(settings: ConnectionSettings):
+    if os.getenv("PATCHPILOT_ALLOW_RUNTIME_CONFIG", "true").lower() not in {"1", "true", "yes"}:
+        raise HTTPException(403, "Runtime connection changes are disabled on this deployment. Configure credentials through the private server environment instead.")
     with _config_lock:
         if settings.clear:
             _config["api_key"] = ""
